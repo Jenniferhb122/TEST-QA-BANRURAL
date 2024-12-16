@@ -2,9 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-
     <title>Juego de adivina tu número</title>
-
     <style>
       html {
         font-family: sans-serif;
@@ -21,97 +19,99 @@
       }
     </style>
   </head>
-
   <body>
-      <h1>Juego Adivina tu número</h1>
+    <h1>Juego Adivina tu número</h1>
+    <p>Hemos seleccionado un número aleatorio entre 1 a 100. Trata de adivinar el número, en un total de 10 turnos o menos. No te preocupes, te diremos si el número es más alto o más bajo.</p>
+    <div class="form">
+      <label for="guessField">Ingresa el número a adivinar: </label><input type="text" id="guessField" class="guessField">
+      <input type="submit" value="Ingresar el número aleatorio" class="guessSubmit">
+    </div>
+    <div class="resultParas">
+      <p class="guesses"></p>
+      <p class="lastResult"></p>
+      <p class="lowOrHi"></p>
+    </div>
 
-      <p>Hemos seleccionado un número aleatorío entre 1 a 100. Trata de adivinar el número, en un total de 10 turnos o menos. No te preocupes, te diremos sí el número es más alto o más bajo </p>
+    <script>
+      // 1. Generación incorrecta del número aleatorio: 
+      // Se corregiró para que el número sea entre 1 y 100
+      let randomNumber = Math.floor(Math.random() * 100) + 1; // Cambio aquí
 
-<div class="form">
-  <label for="guessField">Ingresa el número a adivinar: </label><input type="text" id="guessField" class="guessField">
-  <input type="submit" value="Ingresar el número aleatorio" class="guessSubmit">
-</div>
+      const ATTEMPS = 10;
+      const guesses = document.querySelector('.guesses');
+      const lastResult = document.querySelector('.lastResult');
+      const lowOrHi = document.querySelector('.lowOrHi');  // 2. Cambio en el selector para 'lowOrHi' (se agregó el punto antes de 'lowOrHi' para indicar clase)
+      const guessSubmit = document.querySelector('.guessSubmit');
+      const guessField = document.querySelector('.guessField');
 
-<div class="resultParas">
-  <p class="guesses"></p>
-  <p class="lastResult"></p>
-  <p class="lowOrHi"></p>
-</div>
+      let guessCount = 1;
+      let resetButton;
 
-</body>
+      function checkGuess() {
+        let userGuess = guessField.value;
 
-<script>
-  let randomNumber = Math.random() * 10;
+        if(guessCount === 1) {
+          guesses.textContent = 'Números anteriores: ';
+        }
+        guesses.textContent += userGuess + ' ';
 
-  const ATTEMPS = 5;
-  const guesses = document.querySelector('.guesses');
-  const lastResult = document.querySelector('.lastResult');
-  const lowOrHi = document.querySelector('lowOrHi');
-  const guessSubmit = document.querySelector('.guessSubmit');
-  const guessField = document.querySelector('.guessField');
+        if(userGuess == randomNumber) {  // 3. Cambio en la lógica de mensajes: El mensaje correcto se muestra ahora cuando el número es adivinado.
+          lastResult.textContent = 'Felicitaciones! Adivinaste el número!';  // Mensaje corregido
+          lastResult.style.backgroundColor = 'green';  // Color verde
+          lowOrHi.textContent = '';
+          setGameOver();
+        } else if(guessCount === ATTEMPS) {  // 3. Cambio en la lógica de mensajes: El mensaje de "Perdiste" ahora se muestra si los intentos se terminan.
+          lastResult.textContent = '!!!Pérdistes!!!';  // Mensaje corregido
+          lastResult.style.backgroundColor = 'red';  // Color rojo
+          setGameOver();
+        } else {
+          lastResult.textContent = 'Incorrecto! ';
+          lastResult.style.backgroundColor = 'black';  // Color negro
+          if(userGuess < randomNumber) {
+            lowOrHi.textContent = 'El número es mayor!';
+          } else if(userGuess > randomNumber) {
+            lowOrHi.textContent = 'El número es menor!';
+          }
+        }
 
-  let guessCount = 1;
-  let resetButton;
-
-  function checkGuess() {
-
-    let userGuess = guessField.value;
-    if(guessCount === 1) {
-      guesses.textContent = 'Número aleatorio anterior: ';
-    }
-    guesses.textContent += userGuess + ' ';
-
-    if(userGuess === randomNumber) {
-      lastResult.textContent = '!!!Pérdistes!!!';
-      lastResult.style.backgroundColor = 'black';
-      lowOrHi.textContent = '';
-      setGameOver();
-    } else if(guessCount === ATTEMPS) {
-      lastResult.textContent = 'Felicitaciones! adivinaste el número!';
-      lastResult.style.backgroundColor = 'red';
-      setGameOver();
-    } else {
-      lastResult.textContent = 'Incorrecto! ';
-      lastResult.style.backgroundColor = 'green';
-      if(userGuess < randomNumber) {
-        lowOrHi.textContent = 'El número es mayor!';
-      } else if(userGuess > randomNumber) {
-        lowOrHi.textContent = 'El número es menor!';
+        guessCount++;
+        guessField.value = '';
+        guessField.focus();
       }
-    }
 
-    guessCount++;
-    guessField.value = '';
-    guessField.focus();
-  }
-  guessSubmit.addeventListener('click', checkGuess);
+      // 4. Corregido el método 'addeventListener' (se cambió a 'addEventListener' con la E y L en mayúsculas)
+      guessSubmit.addEventListener('click', checkGuess); // Cambio aquí
 
-  function setGameOver() {
-	  guessField.disabled = true;
-	  guessSubmit.disabled = true;
-	  resetButton = document.createElement('button');
-	  resetButton.textContent = 'Comienza un nuevo juego';
-	  document.body.appendChild(resetButton);
-	  resetButton.addeventListener('click', resetGame);
-  }
+      function setGameOver() {
+        guessField.disabled = true;
+        guessSubmit.disabled = true;
+        resetButton = document.createElement('button');
+        resetButton.textContent = 'Comienza un nuevo juego';
+        document.body.appendChild(resetButton);
+        // 5. Corregido el método 'addeventListener' (se cambió a 'addEventListener')
+        resetButton.addEventListener('click', resetGame); // Cambio aquí
+      }
 
-  function resetGame() {
-	  guessCount = 1;
+      function resetGame() {
+        guessCount = 1;
 
-	  const resetParas = document.querySelectorAll('.resultParas p');
-	  for(let i = 0; i < resetParas.length; i++) {
-		  resetParas[i].textContent = '';
-	  }
-	  resetButton.parentNode.removeChild(resetButton);
+        const resetParas = document.querySelectorAll('.resultParas p');
+        for(let i = 0; i < resetParas.length; i++) {
+          resetParas[i].textContent = '';
+        }
+        resetButton.parentNode.removeChild(resetButton);
 
-	  guessField.disabled = false;
-	  guessSubmit.disabled = false;
-	  guessField.value = '';
-	  guessField.focus();
+        guessField.disabled = false;
+        guessSubmit.disabled = false;
+        guessField.value = '';
+        guessField.focus();
 
-	  lastResult.style.backgroundColor = 'white';
+        lastResult.style.backgroundColor = 'white';
 
-	  randomNumber = Math.floor(Math.random()) + 1;
-  }
-</script>
+        // 1. Regeneración del número aleatorio al reiniciar el juego
+        randomNumber = Math.floor(Math.random() * 100) + 1; // Cambio aquí
+      }
+    </script>
+  </body>
 </html>
+
